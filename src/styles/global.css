@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ── Warm-artistic design tokens ──────────────────────────────────────────
+   An art-studio palette: warm sand/cream canvas, terracotta + clay, deep
+   warm ink, muted sage + ochre accents. Serif display (Fraunces) over a
+   clean sans (DM Sans). The neutral-but-warm canvas lets colorful student
+   artwork pop, with more personality than a stark white gallery. */
+@theme {
+  --color-canvas: #faf4ec;        /* warm cream background */
+  --color-surface: #f3e9da;       /* raised warm surface */
+  --color-ink: #2a211c;           /* deep warm brown-black text */
+  --color-ink-soft: #5b4f47;      /* secondary text (AA on canvas) */
+  --color-clay: #c5683f;          /* primary terracotta */
+  --color-clay-deep: #a14f2c;     /* hover/active */
+  --color-sage: #6f7a5a;          /* muted green accent */
+  --color-ochre: #d8a44b;         /* warm gold accent */
+  --color-line: #e3d6c4;          /* hairline borders */
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+  --shadow-soft: 0 1px 2px rgb(42 33 28 / 0.04), 0 12px 32px -12px rgb(42 33 28 / 0.18);
+}
+
+:root { color-scheme: light; }
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body { margin: 0; min-height: 100dvh; }
+
+h1, h2, h3, .font-display { font-family: var(--font-display); font-optical-sizing: auto; }
+
+/* Fluid display type */
+.display-xl { font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.02; letter-spacing: -0.02em; }
+.display-lg { font-size: clamp(2rem, 4.5vw, 3.5rem); line-height: 1.06; letter-spacing: -0.015em; }
+
+/* ── Motion primitives ────────────────────────────────────────────────────
+   Scroll-reveal + loading use these; all gated by prefers-reduced-motion. */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Hidden-before-reveal only when JS is present (html.js, set inline in <head>),
+   so no-JS users and crawlers always see content. */
+.js [data-reveal] { opacity: 0; }
+.js [data-reveal].is-in { animation: reveal-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* Astro view-transition: smooth fade-out + fade/slide-in of the new page.
+   (vt-fade-in is also reused by the loading splash.) */
+@keyframes vt-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vt-page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+::view-transition-old(root) { animation: 0.2s ease both vt-fade-in reverse; }
+::view-transition-new(root) { animation: 0.42s cubic-bezier(0.22, 1, 0.36, 1) both vt-page-in; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

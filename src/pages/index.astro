@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BlockRenderer } from '@/components/blocks';
+import type { Block } from '@/lib/blocks';
+
+const pages = await getCollection('pages');
+const home = pages.find((p) => (p.data.slug ?? p.id) === 'home');
+const blocks = (home?.data.blocks ?? []) as unknown as Block[];
+---
+<BaseLayout
+  title={home?.data.title ?? "Roopali's Kala Art Studio"}
+  description={home?.data.description}
+  ogImage={home?.data.ogImage}
+>
+  <BlockRenderer blocks={blocks} client:load />
+</BaseLayout>
